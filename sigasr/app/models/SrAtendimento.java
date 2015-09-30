@@ -24,19 +24,31 @@ public class SrAtendimento implements Comparable<SrAtendimento> {
 	
 	public SrAtendimento(SrSolicitacao solicitacao, Date dataInicio,
 			Date dataFinal, SrValor tempoAtendimento,
-			DpLotacao lotacaoAtendente, DpPessoa pessoaAtendente,
-			String tipoAtendimento) {
+			DpLotacao lotacaoAtendente, DpLotacao lotacaoAtendenteDestino,
+			DpPessoa pessoaAtendente, String tipoAtendimento,
+			String itemConfiguracao, String acao) {
 		this.solicitacao = solicitacao;
 		this.dataInicio = dataInicio;
 		this.dataFinal = dataFinal;
 		this.tempoAtendimento = tempoAtendimento;
 		this.lotacaoAtendente = lotacaoAtendente;
+		this.lotacaoAtendenteDestino = lotacaoAtendenteDestino;
 		this.pessoaAtendente = pessoaAtendente;
 		this.tipoAtendimento = tipoAtendimento;
+		this.itemConfiguracao = itemConfiguracao;
+		this.acao = acao;
 	}
 	
-	public SrAtendimento() {
-		
+	public SrAtendimento(SrSolicitacao solicitacao, Date dataFinal, DpPessoa pessoaAtendente, 
+			String itemConfiguracao, String acao, String tipoAtendimento,  
+			DpLotacao lotacaoAtendenteDestino) {
+		this.solicitacao = solicitacao;
+		this.dataFinal = dataFinal;
+		this.pessoaAtendente = pessoaAtendente;
+		this.itemConfiguracao = itemConfiguracao;
+		this.acao = acao;
+		this.tipoAtendimento = tipoAtendimento;
+		this.lotacaoAtendenteDestino = lotacaoAtendenteDestino;
 	}
 
 	public SrSolicitacao getSolicitacao() {
@@ -158,48 +170,47 @@ public class SrAtendimento implements Comparable<SrAtendimento> {
 		}
 	}
 	
-	public SrFaixa definirFaixaDeHoras(CpOrgaoUsuario orgao) {
+	public void definirFaixa(CpOrgaoUsuario orgao) {
 		if (tempoAtendimento != null) {
 			if (orgao.getAcronimoOrgaoUsu().equals("JFRJ"))	
-				return definirFaixaJFRJ(tempoAtendimento.getValorEmHora());
+				setFaixaJFRJ(tempoAtendimento.getValorEmHora());
 			else
-				return definirFaixaTRF(tempoAtendimento.getValorEmHora());
+				setFaixaTRF(tempoAtendimento.getValorEmHora());
 		}
-		return null;
 	}
-	
-	private SrFaixa definirFaixaTRF(float horas) {
+		
+	private void setFaixaTRF(float horas) {
 		if (horas <= 0.25)
-			return SrFaixa.ATE_15MIN;
+			 setFaixa(SrFaixa.ATE_15MIN);
 		else if (horas > 0.25 && horas <= 1)
-			return SrFaixa.ATE_1;
+			setFaixa(SrFaixa.ATE_1);
 		else if (horas > 1 && horas <= 3)
-			return SrFaixa.ATE_3;
+			setFaixa(SrFaixa.ATE_3);
 		else if (horas > 3 && horas <= 8)
-			return SrFaixa.ATE_8;
+			setFaixa(SrFaixa.ATE_8);
 		else if (horas > 8 && horas <= 15)
-			return SrFaixa.ATE_15;
+			setFaixa(SrFaixa.ATE_15);
 		else
-			return SrFaixa.ACIMA_15;
+			setFaixa(SrFaixa.ACIMA_15);
 	}
 	
-	private SrFaixa definirFaixaJFRJ(float horas) {
+	private void setFaixaJFRJ(float horas) {
 		if (horas <= 1)
-			return SrFaixa.ATE_1;
+			setFaixa(SrFaixa.ATE_1);
 		else if (horas > 1 && horas <= 2)
-			return SrFaixa.ATE_2;
+			setFaixa(SrFaixa.ATE_2);
 		else if (horas > 2 && horas <= 4)
-			return SrFaixa.ATE_4;
+			setFaixa(SrFaixa.ATE_4);
 		else if (horas > 4 && horas <= 8)
-			return SrFaixa.ATE_8;
+			setFaixa(SrFaixa.ATE_8);
 		else if (horas > 8 && horas <= 12)
-			return SrFaixa.ATE_12;
+			setFaixa(SrFaixa.ATE_12);
 		else if (horas > 12 && horas <= 16)
-			return SrFaixa.ATE_16;
+			setFaixa(SrFaixa.ATE_16);
 		else if (horas > 16 && horas <= 24)
-			return SrFaixa.ATE_24;
+			setFaixa(SrFaixa.ATE_24);
 		else
-			return SrFaixa.ACIMA_24;
+			setFaixa(SrFaixa.ACIMA_24);
 	}
 	@Override
 	public int compareTo(SrAtendimento o) {

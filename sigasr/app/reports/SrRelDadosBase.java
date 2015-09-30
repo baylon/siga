@@ -51,7 +51,7 @@ public class SrRelDadosBase extends RelatorioTemplate {
 		this.addColuna("Pessoa Atendente", 18, RelatorioRapido.ESQUERDA, false);
 		this.addColuna("Data de Inicio Atendimento", 20, RelatorioRapido.CENTRO, false);
 		this.addColuna("Data de Fim Atendimento", 20, RelatorioRapido.CENTRO, false);
-		this.addColuna("Tipo de Atendimento", 25, RelatorioRapido.ESQUERDA, false);
+		this.addColuna("Tipo de Atendimento", 28, RelatorioRapido.ESQUERDA, false);
 		this.addColuna("Proximo Atendente", 15, RelatorioRapido.ESQUERDA, false);
 		this.addColuna("Item Configuracao", 50, RelatorioRapido.ESQUERDA, false);
 		this.addColuna("Acao", 50, RelatorioRapido.ESQUERDA, false);
@@ -91,9 +91,9 @@ public class SrRelDadosBase extends RelatorioTemplate {
 			List<SrSolicitacao> lista = query.getResultList();
 			for (SrSolicitacao sol : lista) {
 				if (sol.isPai())
-					listaAtendimento = sol.getAtendimentosSolicitacaoPai();
+					listaAtendimento = sol.getAtendimentosSetSolicitacaoPai();
 				else 
-					listaAtendimento = sol.getAtendimentos(false);	
+					listaAtendimento = sol.getAtendimentosSet();	
 				for (SrAtendimento a : listaAtendimento) {
 					if (a.getLotacaoAtendente().getIdInicial().equals(idlotaAtendenteIni) &&
 							a.getTempoAtendimento() != null) {
@@ -103,7 +103,7 @@ public class SrRelDadosBase extends RelatorioTemplate {
 			}
 			tamanhoLista = listaAtendimentoTotal.size();
 			for (SrAtendimento atendimento : listaAtendimentoTotal) {
-				listaFinal.add(atendimento.getSolicitacao().codigo);
+				listaFinal.add(atendimento.getSolicitacao().getCodigo());
 				listaFinal.add(atendimento.getSolicitacao().getHisDtIniDDMMYYYYHHMM());
 				listaFinal.add(atendimento.getLotacaoAtendente().getSiglaCompleta());
 				listaFinal.add(atendimento.getPessoaAtendente() != null ? 

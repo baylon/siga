@@ -210,6 +210,17 @@ public class SrMovimentacao extends GenericModel {
 				|| tipoMov.idTipoMov == SrTipoMovimentacao.TIPO_MOVIMENTACAO_CANCELAMENTO_DE_MOVIMENTACAO;
 	}
 
+    public boolean isInicioAtendimento(){
+    	return  tipoMov.getIdTipoMov() == SrTipoMovimentacao.TIPO_MOVIMENTACAO_ESCALONAMENTO
+					|| tipoMov.getIdTipoMov() == SrTipoMovimentacao.TIPO_MOVIMENTACAO_INICIO_ATENDIMENTO
+					|| tipoMov.getIdTipoMov() == SrTipoMovimentacao.TIPO_MOVIMENTACAO_REABERTURA;
+    }
+    
+    public boolean isFimAtendimento(){
+    	return  tipoMov.getIdTipoMov() == SrTipoMovimentacao.TIPO_MOVIMENTACAO_ESCALONAMENTO
+					|| tipoMov.getIdTipoMov() == SrTipoMovimentacao.TIPO_MOVIMENTACAO_FECHAMENTO;
+    }
+    
 	public SrMovimentacao getAnterior() {
 		boolean pronto = false;
 		for (SrMovimentacao mov : solicitacao.getMovimentacaoSet()) {
