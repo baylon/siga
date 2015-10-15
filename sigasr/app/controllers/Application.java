@@ -3,6 +3,7 @@ package controllers;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ import models.SrUrgencia;
 import models.vo.PaginaItemConfiguracao;
 import models.vo.SelecionavelVO;
 import models.vo.SrSolicitacaoListaVO;
+import net.sf.jasperreports.engine.JRParameter;
 
 import org.joda.time.LocalDate;
 
@@ -53,10 +55,13 @@ import play.Play;
 import play.data.validation.Error;
 import play.data.validation.Validation;
 import play.db.jpa.JPA;
+import play.db.jpa.NoTransaction;
+import play.db.jpa.Transactional;
 import play.mvc.Before;
 import play.mvc.Catch;
 import play.mvc.Http;
 import play.mvc.Scope;
+import reports.SrRelDadosBase;
 import util.AtualizacaoLista;
 import util.SrSolicitacaoAtendidos;
 import util.SrSolicitacaoFiltro;
@@ -1702,5 +1707,34 @@ public class Application extends SigaApplication {
 		SrConfiguracao configuracao = JPA.em().find(SrConfiguracao.class, id);
 		configuracao.salvar();
 		return configuracao.toVO().toJson();
+	}
+	
+	public static void exibirRelAtendimentos() throws Exception {
+		assertAcesso("REL:Relatorio");
+		render();
+	}
+	
+	@Transactional(readOnly=true)
+	public static void gerarRelAtendimentos(Long lotacao, String dtIni, 
+			String dtFim, String downloadToken) throws Exception {
+		assertAcesso("REL:Relatorio");
+		DpLotacao lotaAtendente = JPA.em().find(DpLotacao.class, lotacao);
+		String nomeArquivoExportado = "relAtendimentos_" 
+					+  new SimpleDateFormat("ddMMyy_HHmm").format(new Date()) 
+					+ "_" + lotaAtendente.getSigla() + ".xlsx";
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		parametros.put("dtIni", dtIni);
+		parametros.put("dtFim", dtFim);
+		parametros.put("idlotaAtendenteIni", lotaAtendente.getIdLotacaoIni());
+		parametros.put("secaoUsuario", lotaAtendente.getOrgaoUsuario().getDescricaoMaiusculas());
+		parametros.put(JRParameter.IS_IGNORE_PAGINATION, true);
+		
+		SrRelDadosBase rel = new SrRelDadosBase(parametros);
+		rel.gerar();
+		byte[] arquivo = rel.getRelatorioExcel();
+		
+		response.setCookie("fileDownloadToken", downloadToken);
+		renderBinary(new ByteArrayInputStream(arquivo), nomeArquivoExportado,  
+				arquivo.length, false);
 	}
 }

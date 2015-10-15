@@ -210,6 +210,17 @@ public class SrMovimentacao extends GenericModel {
 				|| tipoMov.idTipoMov == SrTipoMovimentacao.TIPO_MOVIMENTACAO_CANCELAMENTO_DE_MOVIMENTACAO;
 	}
 
+    public boolean isInicioAtendimento(){
+    	return  tipoMov.getIdTipoMov() == SrTipoMovimentacao.TIPO_MOVIMENTACAO_ESCALONAMENTO
+					|| tipoMov.getIdTipoMov() == SrTipoMovimentacao.TIPO_MOVIMENTACAO_INICIO_ATENDIMENTO
+					|| tipoMov.getIdTipoMov() == SrTipoMovimentacao.TIPO_MOVIMENTACAO_REABERTURA;
+    }
+    
+    public boolean isFimAtendimento(){
+    	return  tipoMov.getIdTipoMov() == SrTipoMovimentacao.TIPO_MOVIMENTACAO_ESCALONAMENTO
+					|| tipoMov.getIdTipoMov() == SrTipoMovimentacao.TIPO_MOVIMENTACAO_FECHAMENTO;
+    }
+    
 	public SrMovimentacao getAnterior() {
 		boolean pronto = false;
 		for (SrMovimentacao mov : solicitacao.getMovimentacaoSet()) {
@@ -288,14 +299,14 @@ public class SrMovimentacao extends GenericModel {
 		solicitacao.refresh();
 
 		solicitacao.atualizarMarcas();
-		//notificação usuário
+		//notificaï¿½ï¿½o usuï¿½rio
 		if (solicitacao.getMovimentacaoSetComCancelados().size() > 1
 				&& tipoMov.idTipoMov != SrTipoMovimentacao.TIPO_MOVIMENTACAO_CANCELAMENTO_DE_MOVIMENTACAO
 				&& solicitacao.formaAcompanhamento != SrFormaAcompanhamento.ABERTURA
 				&& !(solicitacao.formaAcompanhamento == SrFormaAcompanhamento.ABERTURA_FECHAMENTO
 				&& tipoMov.idTipoMov != SrTipoMovimentacao.TIPO_MOVIMENTACAO_FECHAMENTO && tipoMov.idTipoMov != SrTipoMovimentacao.TIPO_MOVIMENTACAO_INICIO_POS_ATENDIMENTO))
 			notificar();
-		//notificação atendente
+		//notificaï¿½ï¿½o atendente
 		notificarAtendente();
 		return this;
 	}
