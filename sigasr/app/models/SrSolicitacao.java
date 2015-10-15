@@ -2953,8 +2953,8 @@ public class SrSolicitacao extends HistoricoSuporte implements SrSelecionavel {
 			tipoAtendimento = "A Fechar";
 		}
 		SrMovimentacao movReabertura = getUltimaMovimentacaoPorTipo(SrTipoMovimentacao.TIPO_MOVIMENTACAO_REABERTURA);
-		if(movReabertura != null && movReabertura.getDtIniMov().after(dataFinalUltimaFilha))
-			dataInicioPai = movReabertura.getDtIniMov();
+		if(movReabertura != null && movReabertura.dtIniMov.after(dataFinalUltimaFilha))
+			dataInicioPai = movReabertura.dtIniMov;
 		else
 			dataInicioPai = dataFinalUltimaFilha;
 
