@@ -110,6 +110,7 @@ public class PrincipalController extends SigaController {
 		for (CpOrgaoUsuario ou : CpDao.getInstance().listarOrgaosUsuarios()) {
 			mapAcronimo.put(ou.getAcronimoOrgaoUsu(), ou);
 		}
+		
 		String acronimos = "";
 		for (String s : mapAcronimo.keySet()) {
 			acronimos += "|" + s;
