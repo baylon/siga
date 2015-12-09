@@ -739,7 +739,7 @@ public class AppController extends GcController {
 		GcInformacao sel = null;
 		try{
 			sel = GcInformacao.findBySigla(sigla, getLotaTitular().getOrgaoUsuario());
-		} catch(AplicacaoException e){
+		} catch(Exception e){
 			sel = GcInformacao.findByTitulo(sigla);
 		}
 		if (sel != null)
