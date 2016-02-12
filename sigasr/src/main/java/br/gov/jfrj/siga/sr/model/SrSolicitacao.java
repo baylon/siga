@@ -48,7 +48,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.OneToMany;
+import javax.persistence.Query;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -1499,16 +1502,7 @@ public class SrSolicitacao extends HistoricoSuporte implements SrSelecionavel {
         }
         
         setDtReg(new Date());
-        
-        if (getNumSolicitacao() == null && !isRascunho() && !isFilha()) {
-            // DB1: Verifica se Ã¯Â¿Â½ uma Solicita\u00E7Ã£o Filha, pois caso seja nÃ£o
-            // deve atualizar o nÃ¯Â¿Â½mero da solicitaÃ§Ã£o, caso contrÃ¯Â¿Â½rio nÃ£o
-            // funcionarÃ¯Â¿Â½ o filtro por cÃ¯Â¿Â½digo para essa filha
-            setNumSolicitacao(getProximoNumero());
-            atualizarCodigo();
-            setTempoDecorridoCadastro(getCadastro().getDecorridoEmSegundos());
-        }
-                   
+                          
         // Edson: Ver por que isto está sendo necessário. Sem isso, após o salvar(),
         // ocorre LazyIniException ao tentar acessar esses meuMovimentacaoSet's
         if (getSolicitacaoInicial() != null){
@@ -1518,6 +1512,13 @@ public class SrSolicitacao extends HistoricoSuporte implements SrSelecionavel {
         	}
         }
 
+        if (getNumSolicitacao() == null && !isRascunho() && !isFilha()) {
+            // DB1: Verifica se é uma Solicitação Filha, pois caso seja não
+            // deve atualizar o número da solicitação, caso contrário não
+            // funcionará o filtro por código para essa filha	
+        	definirNumeroSolicitacao();
+        }
+        
         super.salvarComHistorico();
         refresh();
         getSolicitacaoInicial().refresh();
@@ -1554,6 +1555,30 @@ public class SrSolicitacao extends HistoricoSuporte implements SrSelecionavel {
         	getSolicitacaoPai().deixarPendenteAguardandoFilha(getCadastrante(), getLotaCadastrante(), getTitular(), getLotaTitular(), this);
     }
 
+    private void definirNumeroSolicitacao() throws Exception {
+    	Long numero = 0l;
+    	String codigoSol = null;
+    	try {
+        	do {
+            	numero = getProximoNumero();
+        		Query query = AR.em().createQuery("select codigo from SrSolicitacao sol where hisDtFim is null and "
+        				+ "orgaoUsuario.idOrgaoUsu = :idOrgaoUsu and numSolicitacao = :numero");
+        		query.setParameter("idOrgaoUsu", getSolicitante().getOrgaoUsuario().getId());
+        		query.setParameter("numero", numero);
+        		codigoSol = (String) query.getSingleResult();
+        	} while (codigoSol != null);
+        	setNumSolicitacao(numero);
+    	} catch(NoResultException e) {
+    		setNumSolicitacao(numero);
+    	} catch(NonUniqueResultException e) {
+            setNumSolicitacao(getProximoNumero());
+    	} 
+    	finally {
+    		atualizarCodigo();
+    		setTempoDecorridoCadastro(getCadastro().getDecorridoEmSegundos());
+    	}
+    }
+    
     private void incluirEmListasAutomaticas() throws Exception {
         for (ListaInclusaoAutomatica dadosInclusao : getListasParaInclusaoAutomatica(getLotaCadastrante())) {
             incluirEmLista(dadosInclusao.getLista(), getCadastrante(), getLotaCadastrante(), getTitular(), getLotaTitular(), dadosInclusao.getPrioridadeNaLista(), Boolean.FALSE);
