@@ -13,6 +13,8 @@ import play.db.jpa.GenericModel;
 @Entity(name = "Agendamentos")
 @Table(name = "Agendamentos", schema = "SIGAPMP")
 public class Agendamentos extends GenericModel {
+
+ private static final long serialVersionUID = -1131369732991469521L;
  @Id()
  @Column(name = "data_ag", nullable=false)
  public Date data_ag;
@@ -35,9 +37,12 @@ public class Agendamentos extends GenericModel {
  public String processo;
  @Column(name="orgao", length=15, nullable=true)
  public String orgao;
+ @Column(name="sesb_pessoa", length=2, nullable=true)
+ public String sesb_pessoa;
 public Agendamentos(Date data_ag, String hora_ag, Locais localFk, 
 		String matricula, String periciado, String perito_juizo,
-		String perito_parte, String processo, String orgao) {
+		String perito_parte, String processo, String orgao,
+		String sesb_pessoa) {
 	this.data_ag = data_ag;
 	this.hora_ag = hora_ag;
 	this.localFk = localFk;
@@ -47,6 +52,7 @@ public Agendamentos(Date data_ag, String hora_ag, Locais localFk,
 	this.perito_parte = perito_parte;
 	this.processo = processo;
 	this.orgao = orgao;
+	this.sesb_pessoa = sesb_pessoa;
  }
 
 }

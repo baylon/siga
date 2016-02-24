@@ -13,9 +13,15 @@ import play.db.jpa.GenericModel;
 @Table(name = "UsuarioForum", schema = "SIGAPMP")
 public class UsuarioForum extends GenericModel {
 	
+	private static final long serialVersionUID = -461144117965399817L;
+
 	@Id()
-	@Column(name="matricula_usu", length=6 ,nullable=false, unique=true)
+	@Column(name="matricula_usu", length=6 ,nullable=false)
 	public String matricula_usu;
+	
+	@Id()
+	@Column(name="sesb_pessoa", length=2, nullable=false)
+	public String sesb_pessoa;
 	
 	@Id()	
 	@ManyToOne
@@ -24,9 +30,10 @@ public class UsuarioForum extends GenericModel {
 	
 	@Column(name="nome_usu" , length=50 , nullable=true)
 	public String nome_usu;
-	
-	public UsuarioForum(String matricula_usu_construt, String nome_usu_construt, Foruns cod_forum_construt) {
+		
+	public UsuarioForum(String matricula_usu_construt, String sesb_pessoa_construt, String nome_usu_construt, Foruns cod_forum_construt) {
 		this.matricula_usu = matricula_usu_construt;
+		this.sesb_pessoa = sesb_pessoa_construt;
 		this.nome_usu = nome_usu_construt;
 		this.forumFk = cod_forum_construt;
 	}
