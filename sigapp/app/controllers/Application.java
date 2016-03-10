@@ -899,9 +899,6 @@ public class Application extends SigaApplication {
 				Foruns objForum = Foruns.findById(Integer
 						.parseInt(paramCodForum));
 				descricaoForum = objForum.descricao_forum;
-				objUsuario.delete();
-				JPA.em().flush();
-				JPA.em().clear();
 				objUsuario.forumFk = objForum;
 				objUsuario.matricula_usu = matriculaSessao;
 				objUsuario.sesb_pessoa = sesb_pessoaSessao;
